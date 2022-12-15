@@ -11,7 +11,7 @@ if (navigator.mediaDevices) {
 
             const source = audioCtx.createMediaStreamSource(stream);
             source.connect(analyser);
-
+            const nyquist = audioCtx.sampleRate / 2;
             const canvas = document.getElementById('oscilloscope');
             const canvasCtx = canvas.getContext('2d')
             WIDTH = canvas.width;
@@ -30,7 +30,6 @@ if (navigator.mediaDevices) {
             }
 
             function getIndexByFrequency(frequency) {
-                var nyquist = audioCtx.sampleRate / 2;
                 return Math.round(frequency / nyquist * freqDomain.length);
             }
 
@@ -51,6 +50,8 @@ if (navigator.mediaDevices) {
                     canvasCtx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
                     canvasCtx.fillRect(i * barWidth, offset, barWidth, height);
                 }
+                let maxFreq = getIndexMaxValueOfArray(freqDomain);
+                document.getElementById('freq').innerHTML = `${maxFreq * nyquist/freqDomain.length} Hz`;
             }
             draw();
         });
@@ -74,4 +75,9 @@ function drawAliasX(maxFrequency, labels) {
         div.style.minWidth = (WIDTH / 9) + 'px';
         eixoX.appendChild(div);
     }
+}
+
+// max value of array
+function getIndexMaxValueOfArray(array) {
+    return array.indexOf(Math.max.apply(null, array));
 }
